@@ -13,32 +13,32 @@ import java.time.LocalDate;
  * Clase principal - Demostración de paquetes e imports
  */
 public class Main {
-    public static void main(String[] args) {
-        System.out.println("=== Sistema de Reservas ===\n");
-        
-        // Validar email usando import estático
-        String emailCliente = "ana@mail.com";
-        if (validarEmail(emailCliente)) {
-            System.out.println("✅ Email válido: " + emailCliente);
-        }
-        
-        // Crear cliente
-        Cliente cliente = new Cliente("Ana García", emailCliente);
-        
-        // Crear gestor
-        GestorReservas gestor = new GestorReservas();
-        
-        // Validar código usando import estático
-        String codigo = "R001";
-        if (validarCodigo(codigo)) {
-            gestor.agregarReserva(codigo, cliente, LocalDate.now(), 1500000);
-        }
-        
-        gestor.agregarReserva("R002", cliente, LocalDate.now().plusDays(5), 2000000);
-        
-        // Listar
-        gestor.listarReservas();
-        
-        System.out.println("\n✅ Ejercicio 01 completado: Paquetes e Imports funcionando correctamente");
+  public static void main(String[] args) {
+    System.out.println("=== Sistema de Reservas ===\n");
+
+    // Validar email usando import estático
+    String emailCliente = "ana@mail.com";
+    if (validarEmail(emailCliente)) {
+      System.out.println("✅ Email válido: " + emailCliente);
     }
+
+    // Crear cliente
+    Cliente cliente = new Cliente("Ana García", emailCliente);
+
+    // Crear gestor
+    GestorReservas gestor = new GestorReservas();
+
+    // Validar código usando import estático
+    String codigo = "R001";
+    if (validarCodigo(codigo)) {
+      gestor.agregarReserva(codigo, cliente, LocalDate.now(), 1500000);
+    }
+
+    gestor.agregarReserva("R002", cliente, LocalDate.now().plusDays(5), 2000000);
+
+    // Listar
+    gestor.listarReservas();
+
+    System.out.println("\n✅ Ejercicio 01 completado: Paquetes e Imports funcionando correctamente");
+  }
 }
