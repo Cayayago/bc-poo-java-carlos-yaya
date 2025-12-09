@@ -1,5 +1,6 @@
 package co.edu.sena.traslados_seguros;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,28 @@ public class GestorMudanzas {
         this.servicios = new ArrayList<>();
     }
 
+    public List<Cliente> getClientes() {
+        return new ArrayList<>(clientes);
+    }
+
+    public List<Vehiculo> getVehiculos() {
+        return new ArrayList<>(vehiculos);
+    }
+
+    public List<Empleado> getEmpleados() {
+        return new ArrayList<>(empleados);
+    }
+
+    public List<MovingService> getServicios() {
+        return new ArrayList<>(servicios);
+    }
+
     public void registrarCliente(Cliente cliente) {
+        if (cliente == null) {
+            System.out.println("ERROR: Cliente no puede ser nulo");
+            return;
+        }
+
         if (buscarClientePorId(cliente.getIdentificacion()) != null) {
             System.out.println("ERROR: Cliente con ID " + cliente.getIdentificacion() + " ya existe");
             return;
@@ -27,6 +49,11 @@ public class GestorMudanzas {
     }
 
     public void registrarVehiculo(Vehiculo vehiculo) {
+        if (vehiculo == null) {
+            System.out.println("ERROR: Vehiculo no puede ser nulo");
+            return;
+        }
+
         if (buscarVehiculoPorPlaca(vehiculo.getPlaca()) != null) {
             System.out.println("ERROR: Vehiculo con placa " + vehiculo.getPlaca() + " ya existe");
             return;
@@ -36,6 +63,11 @@ public class GestorMudanzas {
     }
 
     public void registrarEmpleado(Empleado empleado) {
+        if (empleado == null) {
+            System.out.println("ERROR: Empleado no puede ser nulo");
+            return;
+        }
+
         if (buscarEmpleadoPorCodigo(empleado.getCodigoEmpleado()) != null) {
             System.out.println("ERROR: Empleado con codigo " + empleado.getCodigoEmpleado() + " ya existe");
             return;
@@ -45,6 +77,11 @@ public class GestorMudanzas {
     }
 
     public void registrarServicio(MovingService servicio) {
+        if (servicio == null) {
+            System.out.println("ERROR: Servicio no puede ser nulo");
+            return;
+        }
+
         if (buscarServicioPorCodigo(servicio.getServiceCode()) != null) {
             System.out.println("ERROR: Servicio con codigo " + servicio.getServiceCode() + " ya existe");
             return;
@@ -54,95 +91,63 @@ public class GestorMudanzas {
     }
 
     public Cliente buscarClientePorId(String identificacion) {
-        for (Cliente cliente : clientes) {
-            if (cliente.getIdentificacion().equals(identificacion)) {
-                return cliente;
-            }
-        }
-        return null;
+        return buscarEnLista(clientes, c -> c.getIdentificacion().equals(identificacion));
     }
 
     public Vehiculo buscarVehiculoPorPlaca(String placa) {
-        for (Vehiculo vehiculo : vehiculos) {
-            if (vehiculo.getPlaca().equals(placa)) {
-                return vehiculo;
-            }
-        }
-        return null;
+        return buscarEnLista(vehiculos, v -> v.getPlaca().equalsIgnoreCase(placa));
     }
 
     public Empleado buscarEmpleadoPorCodigo(String codigo) {
-        for (Empleado empleado : empleados) {
-            if (empleado.getCodigoEmpleado().equals(codigo)) {
-                return empleado;
-            }
-        }
-        return null;
+        return buscarEnLista(empleados, e -> e.getCodigoEmpleado().equalsIgnoreCase(codigo));
     }
 
     public MovingService buscarServicioPorCodigo(String codigo) {
-        for (MovingService servicio : servicios) {
-            if (servicio.getServiceCode().equals(codigo)) {
-                return servicio;
+        return buscarEnLista(servicios, s -> s.getServiceCode().equalsIgnoreCase(codigo));
+    }
+
+    private <T> T buscarEnLista(List<T> lista, Predicado<T> condicion) {
+        for (T elemento : lista) {
+            if (condicion.evaluar(elemento)) {
+                return elemento;
             }
         }
         return null;
     }
 
+    @FunctionalInterface
+    private interface Predicado<T> {
+        boolean evaluar(T elemento);
+    }
+
     public List<Vehiculo> obtenerVehiculosDisponibles() {
-        List<Vehiculo> disponibles = new ArrayList<>();
-        for (Vehiculo vehiculo : vehiculos) {
-            if (vehiculo.isDisponible()) {
-                disponibles.add(vehiculo);
-            }
-        }
-        return disponibles;
+        return filtrarLista(vehiculos, Vehiculo::isDisponible);
     }
 
     public List<Empleado> obtenerEmpleadosDisponibles() {
-        List<Empleado> disponibles = new ArrayList<>();
-        for (Empleado empleado : empleados) {
-            if (!empleado.isOcupado()) {
-                disponibles.add(empleado);
+        return filtrarLista(empleados, e -> !e.isOcupado());
+    }
+
+    private <T> List<T> filtrarLista(List<T> lista, Predicado<T> condicion) {
+        List<T> resultado = new ArrayList<>();
+        for (T elemento : lista) {
+            if (condicion.evaluar(elemento)) {
+                resultado.add(elemento);
             }
         }
-        return disponibles;
+        return resultado;
     }
 
     public void listarClientes() {
-        System.out.println("\n=== LISTA DE CLIENTES ===");
-        if (clientes.isEmpty()) {
-            System.out.println("No hay clientes registrados");
-        } else {
-            for (int i = 0; i < clientes.size(); i++) {
-                System.out.println((i + 1) + ". " + clientes.get(i));
-            }
-        }
-        System.out.println("Total: " + clientes.size());
+        listarElementos("CLIENTES", clientes);
     }
 
     public void listarVehiculos() {
-        System.out.println("\n=== LISTA DE VEHICULOS ===");
-        if (vehiculos.isEmpty()) {
-            System.out.println("No hay vehiculos registrados");
-        } else {
-            for (int i = 0; i < vehiculos.size(); i++) {
-                System.out.println((i + 1) + ". " + vehiculos.get(i));
-            }
-        }
-        System.out.println("Total: " + vehiculos.size());
+        listarElementos("VEHICULOS", vehiculos);
     }
 
     public void listarEmpleados() {
-        System.out.println("\n=== LISTA DE EMPLEADOS ===");
-        if (empleados.isEmpty()) {
-            System.out.println("No hay empleados registrados");
-        } else {
-            for (int i = 0; i < empleados.size(); i++) {
-                System.out.println((i + 1) + ". " + empleados.get(i));
-            }
-        }
-        System.out.println("Total: " + empleados.size());
+        listarElementos("EMPLEADOS", empleados);
     }
 
     public void listarServicios() {
@@ -157,12 +162,26 @@ public class GestorMudanzas {
         System.out.println("\nTotal: " + servicios.size());
     }
 
+    private <T> void listarElementos(String titulo, List<T> lista) {
+        System.out.println("\n=== LISTA DE " + titulo + " ===");
+        if (lista.isEmpty()) {
+            System.out.println("No hay elementos registrados");
+        } else {
+            for (int i = 0; i < lista.size(); i++) {
+                System.out.println((i + 1) + ". " + lista.get(i));
+            }
+        }
+        System.out.println("Total: " + lista.size());
+    }
+
     public void generarReporteGeneral() {
         System.out.println("\n=== REPORTE GENERAL DEL SISTEMA ===");
-        System.out.println("Total Clientes: " + clientes.size());
-        System.out.println("Total Vehiculos: " + vehiculos.size() + " (Disponibles: " + obtenerVehiculosDisponibles().size() + ")");
-        System.out.println("Total Empleados: " + empleados.size() + " (Disponibles: " + obtenerEmpleadosDisponibles().size() + ")");
-        System.out.println("Total Servicios: " + servicios.size());
+        System.out.println("Total Clientes: " + contarClientes());
+        System.out.println("Total Vehiculos: " + contarVehiculos() +
+                " (Disponibles: " + obtenerVehiculosDisponibles().size() + ")");
+        System.out.println("Total Empleados: " + contarEmpleados() +
+                " (Disponibles: " + obtenerEmpleadosDisponibles().size() + ")");
+        System.out.println("Total Servicios: " + contarServicios());
     }
 
     public int contarClientes() {

@@ -1,5 +1,6 @@
 package co.edu.sena.traslados_seguros;
 
+
 import java.util.List;
 
 public class Main {
@@ -120,6 +121,8 @@ public class Main {
         for (Vehiculo v : disponibles) {
             System.out.println("  - " + v.getPlaca() + " (" + v.getTipoVehiculo() + ")");
         }
+
+        gestor.generarReporteGeneral();
 
         System.out.println("\nPrograma finalizado.\n");
     }

@@ -9,14 +9,20 @@ public class Empleado {
     private String nombreCompleto;
     private String cargo;
     private double salarioDiario;
+    private String telefono;
     private boolean ocupado;
     private List<MovingService> serviciosRealizados;
 
     public Empleado(String codigoEmpleado, String nombreCompleto, String cargo, double salarioDiario) {
-        this.codigoEmpleado = codigoEmpleado;
-        this.nombreCompleto = nombreCompleto;
-        this.cargo = cargo;
-        this.salarioDiario = salarioDiario;
+        this(codigoEmpleado, nombreCompleto, cargo, salarioDiario, null);
+    }
+
+    public Empleado(String codigoEmpleado, String nombreCompleto, String cargo, double salarioDiario, String telefono) {
+        setCodigoEmpleado(codigoEmpleado);
+        setNombreCompleto(nombreCompleto);
+        setCargo(cargo);
+        setSalarioDiario(salarioDiario);
+        setTelefono(telefono);
         this.ocupado = false;
         this.serviciosRealizados = new ArrayList<>();
     }
@@ -37,62 +43,130 @@ public class Empleado {
         return salarioDiario;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
+
     public boolean isOcupado() {
         return ocupado;
     }
 
     public List<MovingService> getServiciosRealizados() {
-        return serviciosRealizados;
+        return new ArrayList<>(serviciosRealizados);
     }
 
     public void setCodigoEmpleado(String codigoEmpleado) {
-        this.codigoEmpleado = codigoEmpleado;
+        if (validarStringNoVacio(codigoEmpleado) && validarCodigo(codigoEmpleado)) {
+            this.codigoEmpleado = codigoEmpleado.toUpperCase().trim();
+        } else {
+            throw new IllegalArgumentException("Codigo invalido: formato debe ser EMP-### donde ### son 3 digitos");
+        }
     }
 
     public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
+        if (validarStringNoVacio(nombreCompleto) && validarNombre(nombreCompleto)) {
+            this.nombreCompleto = nombreCompleto.trim();
+        } else {
+            throw new IllegalArgumentException("Nombre invalido: debe tener entre 3 y 100 caracteres");
+        }
     }
 
     public void setCargo(String cargo) {
-        this.cargo = cargo;
+        if (validarStringNoVacio(cargo) && validarCargo(cargo)) {
+            this.cargo = cargo.trim();
+        } else {
+            throw new IllegalArgumentException("Cargo invalido: debe tener entre 3 y 50 caracteres");
+        }
     }
 
     public void setSalarioDiario(double salarioDiario) {
-        this.salarioDiario = salarioDiario;
+        if (validarSalario(salarioDiario)) {
+            this.salarioDiario = salarioDiario;
+        } else {
+            throw new IllegalArgumentException("Salario invalido: debe estar entre 50000 y 1000000");
+        }
+    }
+
+    public void setTelefono(String telefono) {
+        if (telefono != null && !telefono.trim().isEmpty()) {
+            if (validarTelefono(telefono)) {
+                this.telefono = telefono.trim();
+            } else {
+                throw new IllegalArgumentException("Telefono invalido: debe tener 10 digitos");
+            }
+        } else {
+            this.telefono = null;
+        }
     }
 
     public void setOcupado(boolean ocupado) {
         this.ocupado = ocupado;
     }
 
+    private boolean validarStringNoVacio(String texto) {
+        return texto != null && !texto.trim().isEmpty();
+    }
+
+    private boolean validarCodigo(String codigo) {
+        return codigo.matches("(?i)EMP-\\d{3}");
+    }
+
+    private boolean validarNombre(String nombre) {
+        int longitud = nombre.trim().length();
+        return longitud >= 3 && longitud <= 100;
+    }
+
+    private boolean validarCargo(String cargo) {
+        int longitud = cargo.trim().length();
+        return longitud >= 3 && longitud <= 50;
+    }
+
+    private boolean validarSalario(double salario) {
+        return salario >= 50000 && salario <= 1000000;
+    }
+
+    private boolean validarTelefono(String telefono) {
+        return telefono.matches("\\d{10}");
+    }
+
     public double calcularPagoSemanal(int diasTrabajados) {
-        if (diasTrabajados < 0 || diasTrabajados > 7) {
-            System.out.println("ERROR: Dias debe estar entre 0 y 7");
-            return 0;
+        if (!validarDiasTrabajados(diasTrabajados)) {
+            throw new IllegalArgumentException("Dias trabajados invalido: debe estar entre 0 y 7");
         }
 
         double pagoTotal = salarioDiario * diasTrabajados;
 
         if (diasTrabajados == 6) {
-            pagoTotal += 50000;
-            System.out.println("Bonificacion aplicada: $50,000");
+            pagoTotal += aplicarBonificacion();
         }
 
         return pagoTotal;
     }
 
+    private boolean validarDiasTrabajados(int dias) {
+        return dias >= 0 && dias <= 7;
+    }
+
+    private double aplicarBonificacion() {
+        System.out.println("Bonificacion aplicada: $50,000");
+        return 50000;
+    }
+
     public void asignarServicio(MovingService servicio) {
-        if (!this.ocupado) {
+        if (!this.ocupado && servicio != null) {
             this.ocupado = true;
-            if (!serviciosRealizados.contains(servicio)) {
-                serviciosRealizados.add(servicio);
-            }
+            agregarServicioAlHistorial(servicio);
         }
     }
 
     public void completarServicio() {
         this.ocupado = false;
-        System.out.println("Empleado " + nombreCompleto + " ha completado servicio");
+    }
+
+    private void agregarServicioAlHistorial(MovingService servicio) {
+        if (!serviciosRealizados.contains(servicio)) {
+            serviciosRealizados.add(servicio);
+        }
     }
 
     public int contarServiciosRealizados() {
@@ -116,8 +190,9 @@ public class Empleado {
     @Override
     public String toString() {
         String estado = ocupado ? "OCUPADO" : "DISPONIBLE";
+        String telInfo = telefono != null ? " | Tel: " + telefono : "";
         return "Empleado " + codigoEmpleado + " | " + nombreCompleto +
-                " | " + cargo + " | $" + salarioDiario + "/dia | " + estado +
+                " | " + cargo + " | $" + salarioDiario + "/dia" + telInfo + " | " + estado +
                 " | Servicios: " + serviciosRealizados.size();
     }
 }
