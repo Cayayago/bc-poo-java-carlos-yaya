@@ -180,12 +180,11 @@ public class MovingService {
             info.append("  Tarifa base: $").append(vehiculoAsignado.calcularTarifaBase()).append("\n");
         }
     }
-
     private void agregarInfoEquipo(StringBuilder info) {
         if (!equipoTrabajo.isEmpty()) {
             info.append("\nEQUIPO DE TRABAJO (").append(equipoTrabajo.size()).append("):\n");
             for (Empleado emp : equipoTrabajo) {
-                info.append("  - ").append(emp.getNombreCompleto())
+                info.append("  - ").append(emp.getNombre())
                         .append(" (").append(emp.getCargo()).append(")")
                         .append(" - $").append(emp.getSalarioDiario()).append("/dia\n");
             }

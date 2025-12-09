@@ -3,36 +3,23 @@ package co.edu.sena.traslados_seguros;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cliente {
+// Semana 4: Cliente hereda de Persona
+public class Cliente extends Persona {
 
-    private String nombre;
-    private String telefono;
-    private String identificacion;
+    // Semana 1: Atributos especificos de Cliente
     private String email;
     private List<MovingService> historialServicios;
 
+    // Semana 4: Constructor 1 - llama a super()
     public Cliente(String nombre, String telefono, String identificacion) {
         this(nombre, telefono, identificacion, null);
     }
 
+    // Semana 4: Constructor 2 - llama a super()
     public Cliente(String nombre, String telefono, String identificacion, String email) {
-        setNombre(nombre);
-        setTelefono(telefono);
-        setIdentificacion(identificacion);
+        super(nombre, telefono, identificacion); // Semana 4: Llamada al constructor padre
         setEmail(email);
         this.historialServicios = new ArrayList<>();
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public String getIdentificacion() {
-        return identificacion;
     }
 
     public String getEmail() {
@@ -41,30 +28,6 @@ public class Cliente {
 
     public List<MovingService> getHistorialServicios() {
         return new ArrayList<>(historialServicios);
-    }
-
-    public void setNombre(String nombre) {
-        if (validarStringNoVacio(nombre) && validarNombre(nombre)) {
-            this.nombre = nombre.trim();
-        } else {
-            throw new IllegalArgumentException("Nombre invalido: debe tener al menos 3 caracteres");
-        }
-    }
-
-    public void setTelefono(String telefono) {
-        if (validarStringNoVacio(telefono) && validarTelefono(telefono)) {
-            this.telefono = telefono.trim();
-        } else {
-            throw new IllegalArgumentException("Telefono invalido: debe tener 10 digitos");
-        }
-    }
-
-    public void setIdentificacion(String identificacion) {
-        if (validarStringNoVacio(identificacion) && validarIdentificacion(identificacion)) {
-            this.identificacion = identificacion.trim();
-        } else {
-            throw new IllegalArgumentException("Identificacion invalida: debe tener entre 5 y 15 caracteres");
-        }
     }
 
     public void setEmail(String email) {
@@ -77,23 +40,6 @@ public class Cliente {
         } else {
             this.email = null;
         }
-    }
-
-    private boolean validarStringNoVacio(String texto) {
-        return texto != null && !texto.trim().isEmpty();
-    }
-
-    private boolean validarNombre(String nombre) {
-        return nombre.trim().length() >= 3 && nombre.trim().length() <= 100;
-    }
-
-    private boolean validarTelefono(String telefono) {
-        return telefono.matches("\\d{10}");
-    }
-
-    private boolean validarIdentificacion(String identificacion) {
-        String id = identificacion.trim();
-        return id.length() >= 5 && id.length() <= 15 && id.matches("\\d+");
     }
 
     private boolean validarEmail(String email) {
@@ -124,6 +70,18 @@ public class Cliente {
         System.out.println("Total servicios: " + historialServicios.size());
     }
 
+    // Semana 4: Override del metodo heredado
+    @Override
+    public void mostrarInformacionBasica() {
+        System.out.println("=== INFORMACION DEL CLIENTE ===");
+        super.mostrarInformacionBasica(); // Semana 4: Llamada al metodo padre
+        if (email != null) {
+            System.out.println("Email: " + email);
+        }
+        System.out.println("Servicios contratados: " + historialServicios.size());
+    }
+
+    // Semana 4: Override de toString
     @Override
     public String toString() {
         String emailInfo = email != null ? " | Email: " + email : "";

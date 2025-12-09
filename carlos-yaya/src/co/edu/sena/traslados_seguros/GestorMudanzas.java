@@ -73,7 +73,7 @@ public class GestorMudanzas {
             return;
         }
         empleados.add(empleado);
-        System.out.println("Empleado " + empleado.getNombreCompleto() + " registrado exitosamente");
+        System.out.println("Empleado " + empleado.getNombre() + " registrado exitosamente");
     }
 
     public void registrarServicio(MovingService servicio) {

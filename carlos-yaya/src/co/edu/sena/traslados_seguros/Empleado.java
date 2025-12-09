@@ -3,36 +3,33 @@ package co.edu.sena.traslados_seguros;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Empleado {
+// Semana 4: Empleado hereda de Persona
+public class Empleado extends Persona {
 
+    // Semana 1: Atributos especificos de Empleado
     private String codigoEmpleado;
-    private String nombreCompleto;
     private String cargo;
     private double salarioDiario;
-    private String telefono;
     private boolean ocupado;
     private List<MovingService> serviciosRealizados;
 
-    public Empleado(String codigoEmpleado, String nombreCompleto, String cargo, double salarioDiario) {
-        this(codigoEmpleado, nombreCompleto, cargo, salarioDiario, null);
-    }
-
-    public Empleado(String codigoEmpleado, String nombreCompleto, String cargo, double salarioDiario, String telefono) {
+    // Semana 4: Constructor 1 - llama a super()
+    public Empleado(String codigoEmpleado, String nombre, String cargo, double salarioDiario, String telefono) {
+        super(nombre, telefono, codigoEmpleado); // Semana 4: Usa codigo como identificacion
         setCodigoEmpleado(codigoEmpleado);
-        setNombreCompleto(nombreCompleto);
         setCargo(cargo);
         setSalarioDiario(salarioDiario);
-        setTelefono(telefono);
         this.ocupado = false;
         this.serviciosRealizados = new ArrayList<>();
     }
 
-    public String getCodigoEmpleado() {
-        return codigoEmpleado;
+    // Semana 4: Constructor 2 simplificado
+    public Empleado(String codigoEmpleado, String nombre, String cargo, double salarioDiario) {
+        this(codigoEmpleado, nombre, cargo, salarioDiario, "0000000000");
     }
 
-    public String getNombreCompleto() {
-        return nombreCompleto;
+    public String getCodigoEmpleado() {
+        return codigoEmpleado;
     }
 
     public String getCargo() {
@@ -41,10 +38,6 @@ public class Empleado {
 
     public double getSalarioDiario() {
         return salarioDiario;
-    }
-
-    public String getTelefono() {
-        return telefono;
     }
 
     public boolean isOcupado() {
@@ -58,16 +51,10 @@ public class Empleado {
     public void setCodigoEmpleado(String codigoEmpleado) {
         if (validarStringNoVacio(codigoEmpleado) && validarCodigo(codigoEmpleado)) {
             this.codigoEmpleado = codigoEmpleado.toUpperCase().trim();
+            // Semana 4: Actualizar tambien la identificacion heredada
+            this.identificacion = this.codigoEmpleado;
         } else {
-            throw new IllegalArgumentException("Codigo invalido: formato debe ser EMP-### donde ### son 3 digitos");
-        }
-    }
-
-    public void setNombreCompleto(String nombreCompleto) {
-        if (validarStringNoVacio(nombreCompleto) && validarNombre(nombreCompleto)) {
-            this.nombreCompleto = nombreCompleto.trim();
-        } else {
-            throw new IllegalArgumentException("Nombre invalido: debe tener entre 3 y 100 caracteres");
+            throw new IllegalArgumentException("Codigo invalido: formato debe ser EMP-###");
         }
     }
 
@@ -87,18 +74,6 @@ public class Empleado {
         }
     }
 
-    public void setTelefono(String telefono) {
-        if (telefono != null && !telefono.trim().isEmpty()) {
-            if (validarTelefono(telefono)) {
-                this.telefono = telefono.trim();
-            } else {
-                throw new IllegalArgumentException("Telefono invalido: debe tener 10 digitos");
-            }
-        } else {
-            this.telefono = null;
-        }
-    }
-
     public void setOcupado(boolean ocupado) {
         this.ocupado = ocupado;
     }
@@ -111,11 +86,6 @@ public class Empleado {
         return codigo.matches("(?i)EMP-\\d{3}");
     }
 
-    private boolean validarNombre(String nombre) {
-        int longitud = nombre.trim().length();
-        return longitud >= 3 && longitud <= 100;
-    }
-
     private boolean validarCargo(String cargo) {
         int longitud = cargo.trim().length();
         return longitud >= 3 && longitud <= 50;
@@ -123,10 +93,6 @@ public class Empleado {
 
     private boolean validarSalario(double salario) {
         return salario >= 50000 && salario <= 1000000;
-    }
-
-    private boolean validarTelefono(String telefono) {
-        return telefono.matches("\\d{10}");
     }
 
     public double calcularPagoSemanal(int diasTrabajados) {
@@ -148,7 +114,6 @@ public class Empleado {
     }
 
     private double aplicarBonificacion() {
-        System.out.println("Bonificacion aplicada: $50,000");
         return 50000;
     }
 
@@ -174,7 +139,7 @@ public class Empleado {
     }
 
     public void mostrarHistorial() {
-        System.out.println("\n=== HISTORIAL EMPLEADO " + nombreCompleto + " ===");
+        System.out.println("\n=== HISTORIAL EMPLEADO " + nombre + " ===");
         if (serviciosRealizados.isEmpty()) {
             System.out.println("No hay servicios registrados");
         } else {
@@ -187,12 +152,23 @@ public class Empleado {
         System.out.println("Total servicios: " + serviciosRealizados.size());
     }
 
+    // Semana 4: Override del metodo heredado
+    @Override
+    public void mostrarInformacionBasica() {
+        System.out.println("=== INFORMACION DEL EMPLEADO ===");
+        System.out.println("Codigo: " + codigoEmpleado);
+        super.mostrarInformacionBasica(); // Semana 4: Llamada al metodo padre
+        System.out.println("Cargo: " + cargo);
+        System.out.println("Salario diario: $" + salarioDiario);
+        System.out.println("Estado: " + (ocupado ? "OCUPADO" : "DISPONIBLE"));
+    }
+
+    // Semana 4: Override de toString
     @Override
     public String toString() {
         String estado = ocupado ? "OCUPADO" : "DISPONIBLE";
-        String telInfo = telefono != null ? " | Tel: " + telefono : "";
-        return "Empleado " + codigoEmpleado + " | " + nombreCompleto +
-                " | " + cargo + " | $" + salarioDiario + "/dia" + telInfo + " | " + estado +
+        return "Empleado " + codigoEmpleado + " | " + nombre +
+                " | " + cargo + " | $" + salarioDiario + "/dia | " + estado +
                 " | Servicios: " + serviciosRealizados.size();
     }
 }
