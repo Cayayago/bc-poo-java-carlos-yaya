@@ -163,13 +163,146 @@ Revisa el archivo `3-recursos/glosario.md` para términos clave de esta semana.
 3. **Pregunta:** Si tienes dudas sobre el dominio o los conceptos, consulta con el instructor
 4. **Compila y prueba:** Asegúrate de que tu código compile antes de entregar
 
+# Semana 02: Clases y Objetos
+
+## 🎯 Objetivo
+
+Expandir tu sistema agregando más clases, creando relaciones entre objetos y usando colecciones básicas (ArrayList).
+
 ---
 
-## 📅 Fecha de Entrega
+## 📦 Estructura de Entrega
 
-**Entrega:** Según calendario definido por el instructor  
-**Formato:** Código fuente (.java) y documentos en formato Markdown o PDF
+```
+bc-oop-java-[ficha]-[apellido]/
+├── semana-01/
+└── semana-02/
+    ├── README.md
+    ├── [ClaseNueva1].java
+    ├── [ClaseNueva2].java
+    ├── [ClaseGestora].java
+    └── Main.java
+```
 
 ---
 
-**Nota Importante:** Este es tu dominio personal para todo el bootcamp. Todas las actividades futuras seguirán en el contexto de la empresa de mudanzas Traslados Seguros. No compartas tu código directamente con otros estudiantes, ya que cada uno tiene un dominio diferente.
+## 📝 Ejercicio 1: Crear Nuevas Clases (30 puntos)
+
+Agrega **2 nuevas clases** relacionadas con tu dominio.
+
+**Requisitos:**
+- Mínimo 3 atributos cada clase
+- Constructor completo
+- Getters y setters
+- Al menos 1 método de negocio
+- Relación con clases existentes
+
+**Ejemplo (Agencia de Viajes):**
+```java
+public class Destino {
+    private String nombre;
+    private String pais;
+    private double costoPromedio;
+    private String temporada;
+    
+    public Destino(String nombre, String pais, double costo, String temporada) {
+        this.nombre = nombre;
+        this.pais = pais;
+        this.costoPromedio = costo;
+        this.temporada = temporada;
+    }
+    
+    public String obtenerInformacion() {
+        return nombre + ", " + pais + " - $" + costoPromedio;
+    }
+    
+    // getters y setters...
+}
+```
+
+---
+
+## 📝 Ejercicio 2: Implementar Relaciones (25 puntos)
+
+Crea relaciones entre tus objetos (composición/agregación).
+
+**Ejemplo:**
+```java
+public class Reserva {
+    private Cliente cliente;        // Relación con Cliente
+    private Destino destino;        // Relación con Destino
+    private String fechaViaje;
+    private int numeroPasajeros;
+    
+    public Reserva(Cliente cliente, Destino destino, String fecha, int pasajeros) {
+        this.cliente = cliente;
+        this.destino = destino;
+        this.fechaViaje = fecha;
+        this.numeroPasajeros = pasajeros;
+    }
+    
+    public double calcularTotal() {
+        return destino.getCostoPromedio() * numeroPasajeros;
+    }
+}
+```
+
+---
+
+## 📝 Ejercicio 3: Usar ArrayList (20 puntos)
+
+Crea una clase gestora que use ArrayList para manejar colecciones.
+
+**Ejemplo:**
+```java
+import java.util.ArrayList;
+
+public class AgenciaViajes {
+    private String nombre;
+    private ArrayList<Reserva> reservas;
+    
+    public AgenciaViajes(String nombre) {
+        this.nombre = nombre;
+        this.reservas = new ArrayList<>();
+    }
+    
+    public void agregarReserva(Reserva reserva) {
+        reservas.add(reserva);
+    }
+    
+    public void mostrarTodasReservas() {
+        for (Reserva reserva : reservas) {
+            System.out.println(reserva.obtenerResumen());
+        }
+    }
+    
+    public int contarReservas() {
+        return reservas.size();
+    }
+}
+```
+
+---
+
+## 📝 Ejercicio 4: Main Completo (25 puntos)
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        // Crear objetos
+        Cliente cliente1 = new Cliente("Juan Pérez", "juan@email.com");
+        Destino cartagena = new Destino("Cartagena", "Colombia", 800000, "Verano");
+        
+        // Crear relación
+        Reserva reserva1 = new Reserva(cliente1, cartagena, "2025-12-15", 2);
+        
+        // Usar ArrayList
+        AgenciaViajes agencia = new AgenciaViajes("Viajes Colombia");
+        agencia.agregarReserva(reserva1);
+        
+        // Mostrar resultados
+        agencia.mostrarTodasReservas();
+        System.out.println("Total reservas: " + agencia.contarReservas());
+    }
+}
+```
