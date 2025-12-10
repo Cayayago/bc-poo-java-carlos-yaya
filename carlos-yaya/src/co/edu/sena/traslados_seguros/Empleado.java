@@ -171,4 +171,9 @@ public class Empleado extends Persona {
                 " | " + cargo + " | $" + salarioDiario + "/dia | " + estado +
                 " | Servicios: " + serviciosRealizados.size();
     }
+    // Semana 5: Override - obtenerTipoPersona
+    @Override
+    public String obtenerTipoPersona() {
+        return "Empleado";
+    }
 }

@@ -88,4 +88,9 @@ public class Cliente extends Persona {
         return "Cliente: " + nombre + " | Tel: " + telefono +
                 " | ID: " + identificacion + emailInfo + " | Servicios: " + historialServicios.size();
     }
+    // Semana 5: Override - obtenerTipoPersona
+    @Override
+    public String obtenerTipoPersona() {
+        return "Cliente";
+    }
 }

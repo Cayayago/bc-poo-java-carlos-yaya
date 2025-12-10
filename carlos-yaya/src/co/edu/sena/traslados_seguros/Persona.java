@@ -87,4 +87,8 @@ public class Persona {
     public String toString() {
         return nombre + " (ID: " + identificacion + ")";
     }
+    // Semana 5: Metodo para sobrescribir en subclases
+    public String obtenerTipoPersona() {
+        return "Persona generica";
+    }
 }

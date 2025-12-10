@@ -1,6 +1,6 @@
 package co.edu.sena.traslados_seguros;
 
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,5 +198,124 @@ public class GestorMudanzas {
 
     public int contarServicios() {
         return servicios.size();
+    }
+    // Semana 5: Sobrecarga 1 - buscar servicio por codigo
+    public MovingService buscarServicio(String codigo) {
+        return buscarServicioPorCodigo(codigo);
+    }
+
+    // Semana 5: Sobrecarga 2 - buscar servicios por cliente
+    public List<MovingService> buscarServicio(Cliente cliente) {
+        List<MovingService> resultado = new ArrayList<>();
+        for (MovingService servicio : servicios) {
+            if (servicio.getCliente() != null &&
+                    servicio.getCliente().getIdentificacion().equals(cliente.getIdentificacion())) {
+                resultado.add(servicio);
+            }
+        }
+        return resultado;
+    }
+
+    // Semana 5: Sobrecarga 3 - buscar servicios por rango de fechas
+    public List<MovingService> buscarServicio(LocalDate fechaInicio, LocalDate fechaFin) {
+        List<MovingService> resultado = new ArrayList<>();
+        for (MovingService servicio : servicios) {
+            LocalDate fechaServicio = servicio.getFechaServicio();
+            if (fechaServicio != null &&
+                    !fechaServicio.isBefore(fechaInicio) &&
+                    !fechaServicio.isAfter(fechaFin)) {
+                resultado.add(servicio);
+            }
+        }
+        return resultado;
+    }
+
+    // Semana 5: Sobrecarga 4 - registrar persona (Cliente o Empleado)
+    public void registrar(Persona persona) {
+        if (persona instanceof Cliente) {
+            registrarCliente((Cliente) persona);
+        } else if (persona instanceof Empleado) {
+            registrarEmpleado((Empleado) persona);
+        }
+    }
+
+    // Semana 5: Sobrecarga 5 - registrar multiple personas
+    public void registrar(List<Persona> personas) {
+        for (Persona persona : personas) {
+            registrar(persona);
+        }
+    }
+
+    // Semana 5: Sobrecarga 6 - calcular tarifa por capacidad
+    public double calcularTarifa(double capacidadM3) {
+        if (capacidadM3 <= 10) {
+            return 150000;
+        } else if (capacidadM3 <= 25) {
+            return 300000;
+        } else {
+            return 500000;
+        }
+    }
+
+    // Semana 5: Sobrecarga 7 - calcular tarifa por vehiculo
+    public double calcularTarifa(Vehiculo vehiculo) {
+        return vehiculo.calcularTarifaBase();
+    }
+
+    // Semana 5: Sobrecarga 8 - calcular tarifa por vehiculo y distancia
+    public double calcularTarifa(Vehiculo vehiculo, double distanciaKm) {
+        double tarifaBase = vehiculo.calcularTarifaBase();
+        double costoDistancia = distanciaKm * 2000;
+        return tarifaBase + costoDistancia;
+    }
+
+    // Semana 5: Metodo polimorfico - acepta Persona (padre)
+    public void mostrarDetallesPersona(Persona persona) {
+        System.out.println("\n=== DETALLES DE " + persona.obtenerTipoPersona().toUpperCase() + " ===");
+        persona.mostrarInformacionBasica();
+        System.out.println("Tipo: " + persona.obtenerTipoPersona());
+    }
+
+    // Semana 5: Metodo polimorfico - procesar multiples personas
+    public void procesarPersonas(List<Persona> personas) {
+        System.out.println("\n=== PROCESANDO PERSONAS ===");
+        for (Persona p : personas) {
+            System.out.println(p.obtenerTipoPersona() + ": " + p.getNombre());
+        }
+    }
+
+    // Semana 5: Metodo polimorfico - contar por tipo
+    public void contarPorTipo(List<Persona> personas) {
+        int clientes = 0;
+        int empleados = 0;
+
+        for (Persona p : personas) {
+            if (p instanceof Cliente) {
+                clientes++;
+            } else if (p instanceof Empleado) {
+                empleados++;
+            }
+        }
+
+        System.out.println("\n=== CONTEO POR TIPO ===");
+        System.out.println("Total Clientes: " + clientes);
+        System.out.println("Total Empleados: " + empleados);
+        System.out.println("Total Personas: " + personas.size());
+    }
+
+    // Semana 5: Metodo polimorfico - validar persona
+    public boolean validarPersona(Persona persona) {
+        if (persona == null) {
+            return false;
+        }
+
+        boolean esValido = persona.getNombre() != null &&
+                persona.getTelefono() != null &&
+                persona.getIdentificacion() != null;
+
+        System.out.println("Validando " + persona.obtenerTipoPersona() + ": " +
+                (esValido ? "VALIDO" : "INVALIDO"));
+
+        return esValido;
     }
 }
