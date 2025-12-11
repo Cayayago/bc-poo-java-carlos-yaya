@@ -1,19 +1,21 @@
 package co.edu.sena.traslados_seguros;
 
-import java.time.LocalDate;
+
+
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
 
-        System.out.println("\nTRASLADOS SEGUROS - SEMANA 5: POLIMORFISMO AVANZADO");
+        System.out.println("\nTRASLADOS SEGUROS - SEMANA 6: CLASES ABSTRACTAS E INTERFACES");
         System.out.println("Estudiante: Carlos Javier Yaya Gomez");
         System.out.println("Ficha: 3228973A\n");
 
         GestorMudanzas gestor = new GestorMudanzas();
 
-        // Semana 1-4: Crear recursos
+        // Crear recursos
         Cliente cliente1 = new Cliente("Ana Garcia", "3001234567", "1012345678", "ana@email.com");
         Cliente cliente2 = new Cliente("Roberto Sanchez", "3109876543", "1087654321");
         Cliente cliente3 = new Cliente("Maria Sanchez", "3109963587", "7258986");
@@ -44,7 +46,7 @@ public class Main {
         gestor.registrarEmpleado(empleado3);
         gestor.registrarEmpleado(empleado4);
 
-        // Semana 1: Crear servicios
+        // Crear servicios
         MovingService servicio1 = new MovingService("MOV-001", "Bogota - Chapinero", "Bogota - Suba");
         servicio1.asignarCliente(cliente1);
         servicio1.asignarVehiculo(vehiculo1);
@@ -89,89 +91,100 @@ public class Main {
         servicio5.asignarEmpleado(empleado3);
         gestor.registrarServicio(servicio5);
 
-        // Semana 5: EJERCICIO 1 - SOBRECARGA
-        System.out.println("\nEJERCICIO 1: SOBRECARGA DE METODOS\n");
+        // SEMANA 6: EJERCICIO 1 - CLASE ABSTRACTA
+        System.out.println("\nEJERCICIO 1: CLASE ABSTRACTA\n");
 
-        // Sobrecarga: buscarServicio()
-        MovingService servicioEncontrado = gestor.buscarServicio("MOV-001");
-        System.out.println("Busqueda por codigo: " +
-                (servicioEncontrado != null ? servicioEncontrado.getServiceCode() : "No encontrado"));
+        // Array polimorfico de clase abstracta
+        List<Persona> personas = new ArrayList<>();
+        personas.add(cliente1);
+        personas.add(empleado1);
+        personas.add(cliente2);
+        personas.add(empleado2);
+        personas.add(cliente3);
+        personas.add(empleado3);
 
-        List<MovingService> serviciosCliente = gestor.buscarServicio(cliente1);
-        System.out.println("Busqueda por cliente: " + serviciosCliente.size() + " servicio(s)");
-
-        LocalDate hoy = LocalDate.now();
-        LocalDate manana = hoy.plusDays(1);
-        List<MovingService> serviciosFecha = gestor.buscarServicio(hoy, manana);
-        System.out.println("Busqueda por fecha: " + serviciosFecha.size() + " servicio(s)");
-
-        // Sobrecarga: calcularTarifa()
-        System.out.println("\nTarifa por capacidad 8m3: $" + gestor.calcularTarifa(8.0));
-        System.out.println("Tarifa por vehiculo: $" + gestor.calcularTarifa(vehiculo1));
-        System.out.println("Tarifa vehiculo + 50km: $" + gestor.calcularTarifa(vehiculo1, 50));
-
-        // Semana 5: EJERCICIO 2 - SOBRESCRITURA
-        System.out.println("\nEJERCICIO 2: SOBRESCRITURA DE METODOS\n");
-
-        System.out.println("Tipo Cliente: " + cliente1.obtenerTipoPersona());
-        System.out.println("Tipo Empleado: " + empleado1.obtenerTipoPersona());
-
-        System.out.println();
-        cliente1.mostrarInformacionBasica();
-        System.out.println();
-        empleado1.mostrarInformacionBasica();
-
-        // Semana 5: EJERCICIO 3 - METODOS POLIMORFICOS
-        System.out.println("\nEJERCICIO 3: METODOS POLIMORFICOS\n");
-
-        gestor.mostrarDetallesPersona(cliente2);
-        gestor.mostrarDetallesPersona(empleado2);
-
-        gestor.validarPersona(cliente3);
-        gestor.validarPersona(empleado3);
-
-        // Semana 5: EJERCICIO 4 - ARRAYLIST POLIMORFICO
-        System.out.println("\nEJERCICIO 4: ARRAYLIST POLIMORFICO\n");
-
-        // ArrayList polimorfico
-        List<Persona> todasLasPersonas = new ArrayList<>();
-        todasLasPersonas.add(cliente1);
-        todasLasPersonas.add(empleado1);
-        todasLasPersonas.add(cliente2);
-        todasLasPersonas.add(empleado2);
-        todasLasPersonas.add(cliente3);
-        todasLasPersonas.add(empleado3);
-        todasLasPersonas.add(cliente4);
-        todasLasPersonas.add(empleado4);
-        todasLasPersonas.add(cliente5);
-
-        // Dynamic Binding
-        System.out.println("Dynamic Binding:");
-        for (Persona p : todasLasPersonas) {
-            System.out.println(p.obtenerTipoPersona() + ": " + p.obtenerNombreCorto());
+        System.out.println("Metodo abstracto calcularCostoOperacional():");
+        for (Persona p : personas) {
+            System.out.println(p.getNombre() + " (" + p.obtenerTipoPersona() + "): $" +
+                    p.calcularCostoOperacional());
         }
 
-        gestor.procesarPersonas(todasLasPersonas);
-        gestor.contarPorTipo(todasLasPersonas);
+        // SEMANA 6: EJERCICIO 2 - INTERFACES
+        System.out.println("\nEJERCICIO 2: INTERFACES\n");
 
-        // instanceof
-        System.out.println("\nUso de instanceof:");
-        for (Persona p : todasLasPersonas) {
-            if (p instanceof Cliente) {
-                Cliente c = (Cliente) p;
-                System.out.println("Cliente: " + c.getNombre() + " - Servicios: " + c.contarServicios());
-            } else if (p instanceof Empleado) {
-                Empleado e = (Empleado) p;
-                System.out.println("Empleado: " + e.getNombre() + " - Cargo: " + e.getCargo());
+        // Interface Calificable
+        System.out.println("Interface Calificable:");
+        cliente1.agregarCalificacion(5);
+        cliente1.agregarCalificacion(4);
+        cliente1.agregarCalificacion(5);
+
+        cliente2.agregarCalificacion(3);
+        cliente2.agregarCalificacion(4);
+
+        cliente3.agregarCalificacion(5);
+        cliente3.agregarCalificacion(5);
+        cliente3.agregarCalificacion(5);
+        cliente3.agregarCalificacion(4);
+
+        List<Calificable> entidadesCalificables = new ArrayList<>();
+        entidadesCalificables.add(cliente1);
+        entidadesCalificables.add(cliente2);
+        entidadesCalificables.add(cliente3);
+
+        for (Calificable c : entidadesCalificables) {
+            Cliente cliente = (Cliente) c;
+            System.out.println(cliente.getNombre() + ":");
+            System.out.println("  Promedio: " + c.obtenerPromedioCalificaciones());
+            System.out.println("  Total: " + c.obtenerTotalCalificaciones());
+            System.out.println("  Nivel: " + c.obtenerNivelCalidad());
+        }
+
+        // Interface Notificable
+        System.out.println("\nInterface Notificable:");
+
+        List<Notificable> entidadesNotificables = new ArrayList<>();
+        entidadesNotificables.add(cliente1);
+        entidadesNotificables.add(empleado1);
+        entidadesNotificables.add(cliente2);
+        entidadesNotificables.add(empleado2);
+
+        // Enviar notificaciones
+        cliente1.enviarNotificacion("Su servicio ha sido confirmado");
+        cliente1.enviarNotificacionUrgente("Cambio de fecha del servicio");
+        empleado1.enviarNotificacion("Nuevo servicio asignado para manana");
+        empleado1.enviarNotificacionUrgente("Reporte de inmediato a la oficina");
+
+        System.out.println("\nVerificando notificaciones pendientes:");
+        for (Notificable n : entidadesNotificables) {
+            String nombre = "";
+            if (n instanceof Cliente) {
+                nombre = ((Cliente) n).getNombre();
+            } else if (n instanceof Empleado) {
+                nombre = ((Empleado) n).getNombre();
             }
+            System.out.println(nombre + ": " +
+                    (n.tieneNotificacionesPendientes() ? "SI tiene notificaciones" : "NO tiene notificaciones"));
         }
 
-        // Sobrecarga con lista
-        System.out.println("\nRegistro multiple:");
-        List<Persona> nuevasPersonas = new ArrayList<>();
-        nuevasPersonas.add(new Cliente("Luis Gomez", "3201112233", "1098765432"));
-        nuevasPersonas.add(new Empleado("EMP-005", "Sandra Paz", "Supervisora", 90000));
-        gestor.registrar(nuevasPersonas);
+        cliente1.mostrarNotificaciones();
+        empleado1.mostrarNotificaciones();
+
+        // SEMANA 6: EJERCICIO 3 - DEMOSTRACION MULTIPLE
+        System.out.println("\nEJERCICIO 3: DEMOSTRACION COMPLETA\n");
+
+        System.out.println("Cliente implementa multiples interfaces:");
+        System.out.println("- Extends Persona (clase abstracta)");
+        System.out.println("- Implements Calificable");
+        System.out.println("- Implements Notificable");
+
+        System.out.println("\nPrueba polimorfismo:");
+        Persona p = cliente1;
+        Calificable cal = cliente1;
+        Notificable not = cliente1;
+
+        System.out.println("Como Persona: " + p.calcularCostoOperacional());
+        System.out.println("Como Calificable: " + cal.obtenerNivelCalidad());
+        System.out.println("Como Notificable: " + (not.tieneNotificacionesPendientes() ? "Tiene notificaciones" : "Sin notificaciones"));
 
         // Reporte final
         System.out.println();

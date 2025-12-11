@@ -1,6 +1,7 @@
 package co.edu.sena.traslados_seguros;
 
-public class Persona {
+// Semana 6: Convertida en clase abstracta
+public abstract class Persona {
 
     // Semana 4: Atributos protected para compartir con subclases
     protected String nombre;
@@ -65,30 +66,33 @@ public class Persona {
 
     private boolean validarIdentificacion(String identificacion) {
         String id = identificacion.trim();
-        // Semana 4: Acepta numeros O codigos tipo EMP-###
         return (id.length() >= 5 && id.length() <= 15) &&
                 (id.matches("\\d+") || id.matches("(?i)EMP-\\d{3}"));
     }
 
-    // Semana 4: Metodo heredable 1
+    // Semana 6: Metodo abstracto - cada subclase debe implementar
+    public abstract double calcularCostoOperacional();
+
+    // Semana 4: Metodo concreto heredable 1
     public void mostrarInformacionBasica() {
         System.out.println("Nombre: " + nombre);
         System.out.println("Telefono: " + telefono);
         System.out.println("ID: " + identificacion);
     }
 
-    // Semana 4: Metodo heredable 2
+    // Semana 4: Metodo concreto heredable 2
     public String obtenerNombreCorto() {
         String[] partes = nombre.split(" ");
         return partes.length > 0 ? partes[0] : nombre;
     }
 
+    // Semana 5: Metodo concreto para sobrescribir en subclases
+    public String obtenerTipoPersona() {
+        return "Persona generica";
+    }
+
     @Override
     public String toString() {
         return nombre + " (ID: " + identificacion + ")";
-    }
-    // Semana 5: Metodo para sobrescribir en subclases
-    public String obtenerTipoPersona() {
-        return "Persona generica";
     }
 }

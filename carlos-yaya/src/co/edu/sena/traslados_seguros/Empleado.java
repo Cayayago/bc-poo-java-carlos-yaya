@@ -3,8 +3,8 @@ package co.edu.sena.traslados_seguros;
 import java.util.ArrayList;
 import java.util.List;
 
-// Semana 4: Empleado hereda de Persona
-public class Empleado extends Persona {
+// Semana 4: Empleado hereda de Persona Empleado implementa Notificable
+public class Empleado extends Persona implements Notificable {
 
     // Semana 1: Atributos especificos de Empleado
     private String codigoEmpleado;
@@ -12,17 +12,18 @@ public class Empleado extends Persona {
     private double salarioDiario;
     private boolean ocupado;
     private List<MovingService> serviciosRealizados;
-
-    // Semana 4: Constructor 1 - llama a super()
+    // Semana 6: Atributos para Notificable
+    private List<String> notificacionesPendientes;
+    // Semana 4: Constructor 1
     public Empleado(String codigoEmpleado, String nombre, String cargo, double salarioDiario, String telefono) {
-        super(nombre, telefono, codigoEmpleado); // Semana 4: Usa codigo como identificacion
+        super(nombre, telefono, codigoEmpleado);
         setCodigoEmpleado(codigoEmpleado);
         setCargo(cargo);
         setSalarioDiario(salarioDiario);
         this.ocupado = false;
         this.serviciosRealizados = new ArrayList<>();
+        this.notificacionesPendientes = new ArrayList<>(); // Semana 6
     }
-
     // Semana 4: Constructor 2 simplificado
     public Empleado(String codigoEmpleado, String nombre, String cargo, double salarioDiario) {
         this(codigoEmpleado, nombre, cargo, salarioDiario, "0000000000");
@@ -175,5 +176,38 @@ public class Empleado extends Persona {
     @Override
     public String obtenerTipoPersona() {
         return "Empleado";
+    }
+    // Semana 6: Implementacion del metodo abstracto
+    @Override
+    public double calcularCostoOperacional() {
+        // Costo operacional: salario diario
+        return salarioDiario;
+    }
+    @Override
+    public void enviarNotificacion(String mensaje) {
+        notificacionesPendientes.add("[NORMAL] " + mensaje);
+        System.out.println("Notificacion enviada a empleado " + nombre + ": " + mensaje);
+    }
+
+    @Override
+    public void enviarNotificacionUrgente(String mensaje) {
+        notificacionesPendientes.add("[URGENTE] " + mensaje);
+        System.out.println("*** URGENTE *** Notificacion a empleado " + nombre + ": " + mensaje);
+    }
+
+    @Override
+    public boolean tieneNotificacionesPendientes() {
+        return !notificacionesPendientes.isEmpty();
+    }
+
+    public void mostrarNotificaciones() {
+        System.out.println("\n=== NOTIFICACIONES DE " + nombre + " ===");
+        if (notificacionesPendientes.isEmpty()) {
+            System.out.println("No hay notificaciones pendientes");
+        } else {
+            for (int i = 0; i < notificacionesPendientes.size(); i++) {
+                System.out.println((i + 1) + ". " + notificacionesPendientes.get(i));
+            }
+        }
     }
 }
