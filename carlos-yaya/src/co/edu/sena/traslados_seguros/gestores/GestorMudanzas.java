@@ -1,4 +1,14 @@
-package co.edu.sena.traslados_seguros;
+package co.edu.sena.traslados_seguros.gestores;
+
+// Semana 7: Imports de otros paquetes
+import co.edu.sena.traslados_seguros.modelos.Cliente;
+import co.edu.sena.traslados_seguros.modelos.Empleado;
+import co.edu.sena.traslados_seguros.modelos.MovingService;
+import co.edu.sena.traslados_seguros.modelos.Persona;
+import co.edu.sena.traslados_seguros.modelos.Vehiculo;
+import co.edu.sena.traslados_seguros.excepciones.EntidadNoEncontradaException;
+import co.edu.sena.traslados_seguros.excepciones.DatosInvalidosException;
+import co.edu.sena.traslados_seguros.excepciones.OperacionInvalidaException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,57 +44,73 @@ public class GestorMudanzas {
         return new ArrayList<>(servicios);
     }
 
-    public void registrarCliente(Cliente cliente) {
+    /**
+     * Registra un cliente en el sistema.
+     *
+     * @param cliente Cliente a registrar
+     * @throws DatosInvalidosException si el cliente es nulo o ya existe
+     */
+    public void registrarCliente(Cliente cliente) throws DatosInvalidosException {
         if (cliente == null) {
-            System.out.println("ERROR: Cliente no puede ser nulo");
-            return;
+            throw new DatosInvalidosException("Cliente no puede ser nulo");
         }
 
         if (buscarClientePorId(cliente.getIdentificacion()) != null) {
-            System.out.println("ERROR: Cliente con ID " + cliente.getIdentificacion() + " ya existe");
-            return;
+            throw new DatosInvalidosException("Cliente con ID " + cliente.getIdentificacion() + " ya existe");
         }
         clientes.add(cliente);
         System.out.println("Cliente " + cliente.getNombre() + " registrado exitosamente");
     }
 
-    public void registrarVehiculo(Vehiculo vehiculo) {
+    /**
+     * Registra un vehiculo en el sistema.
+     *
+     * @param vehiculo Vehiculo a registrar
+     * @throws DatosInvalidosException si el vehiculo es nulo o ya existe
+     */
+    public void registrarVehiculo(Vehiculo vehiculo) throws DatosInvalidosException {
         if (vehiculo == null) {
-            System.out.println("ERROR: Vehiculo no puede ser nulo");
-            return;
+            throw new DatosInvalidosException("Vehiculo no puede ser nulo");
         }
 
         if (buscarVehiculoPorPlaca(vehiculo.getPlaca()) != null) {
-            System.out.println("ERROR: Vehiculo con placa " + vehiculo.getPlaca() + " ya existe");
-            return;
+            throw new DatosInvalidosException("Vehiculo con placa " + vehiculo.getPlaca() + " ya existe");
         }
         vehiculos.add(vehiculo);
         System.out.println("Vehiculo " + vehiculo.getPlaca() + " registrado exitosamente");
     }
 
-    public void registrarEmpleado(Empleado empleado) {
+    /**
+     * Registra un empleado en el sistema.
+     *
+     * @param empleado Empleado a registrar
+     * @throws DatosInvalidosException si el empleado es nulo o ya existe
+     */
+    public void registrarEmpleado(Empleado empleado) throws DatosInvalidosException {
         if (empleado == null) {
-            System.out.println("ERROR: Empleado no puede ser nulo");
-            return;
+            throw new DatosInvalidosException("Empleado no puede ser nulo");
         }
 
         if (buscarEmpleadoPorCodigo(empleado.getCodigoEmpleado()) != null) {
-            System.out.println("ERROR: Empleado con codigo " + empleado.getCodigoEmpleado() + " ya existe");
-            return;
+            throw new DatosInvalidosException("Empleado con codigo " + empleado.getCodigoEmpleado() + " ya existe");
         }
         empleados.add(empleado);
         System.out.println("Empleado " + empleado.getNombre() + " registrado exitosamente");
     }
 
-    public void registrarServicio(MovingService servicio) {
+    /**
+     * Registra un servicio en el sistema.
+     *
+     * @param servicio Servicio a registrar
+     * @throws DatosInvalidosException si el servicio es nulo o ya existe
+     */
+    public void registrarServicio(MovingService servicio) throws DatosInvalidosException {
         if (servicio == null) {
-            System.out.println("ERROR: Servicio no puede ser nulo");
-            return;
+            throw new DatosInvalidosException("Servicio no puede ser nulo");
         }
 
         if (buscarServicioPorCodigo(servicio.getServiceCode()) != null) {
-            System.out.println("ERROR: Servicio con codigo " + servicio.getServiceCode() + " ya existe");
-            return;
+            throw new DatosInvalidosException("Servicio con codigo " + servicio.getServiceCode() + " ya existe");
         }
         servicios.add(servicio);
         System.out.println("Servicio " + servicio.getServiceCode() + " registrado exitosamente");
@@ -94,16 +120,76 @@ public class GestorMudanzas {
         return buscarEnLista(clientes, c -> c.getIdentificacion().equals(identificacion));
     }
 
+    /**
+     * Busca un cliente por ID y lanza excepcion si no existe.
+     *
+     * @param identificacion ID del cliente
+     * @return Cliente encontrado
+     * @throws EntidadNoEncontradaException si el cliente no existe
+     */
+    public Cliente buscarClientePorIdOError(String identificacion) throws EntidadNoEncontradaException {
+        Cliente cliente = buscarClientePorId(identificacion);
+        if (cliente == null) {
+            throw new EntidadNoEncontradaException("Cliente con ID " + identificacion + " no encontrado");
+        }
+        return cliente;
+    }
+
     public Vehiculo buscarVehiculoPorPlaca(String placa) {
         return buscarEnLista(vehiculos, v -> v.getPlaca().equalsIgnoreCase(placa));
+    }
+
+    /**
+     * Busca un vehiculo por placa y lanza excepcion si no existe.
+     *
+     * @param placa Placa del vehiculo
+     * @return Vehiculo encontrado
+     * @throws EntidadNoEncontradaException si el vehiculo no existe
+     */
+    public Vehiculo buscarVehiculoPorPlacaOError(String placa) throws EntidadNoEncontradaException {
+        Vehiculo vehiculo = buscarVehiculoPorPlaca(placa);
+        if (vehiculo == null) {
+            throw new EntidadNoEncontradaException("Vehiculo con placa " + placa + " no encontrado");
+        }
+        return vehiculo;
     }
 
     public Empleado buscarEmpleadoPorCodigo(String codigo) {
         return buscarEnLista(empleados, e -> e.getCodigoEmpleado().equalsIgnoreCase(codigo));
     }
 
+    /**
+     * Busca un empleado por codigo y lanza excepcion si no existe.
+     *
+     * @param codigo Codigo del empleado
+     * @return Empleado encontrado
+     * @throws EntidadNoEncontradaException si el empleado no existe
+     */
+    public Empleado buscarEmpleadoPorCodigoOError(String codigo) throws EntidadNoEncontradaException {
+        Empleado empleado = buscarEmpleadoPorCodigo(codigo);
+        if (empleado == null) {
+            throw new EntidadNoEncontradaException("Empleado con codigo " + codigo + " no encontrado");
+        }
+        return empleado;
+    }
+
     public MovingService buscarServicioPorCodigo(String codigo) {
         return buscarEnLista(servicios, s -> s.getServiceCode().equalsIgnoreCase(codigo));
+    }
+
+    /**
+     * Busca un servicio por codigo y lanza excepcion si no existe.
+     *
+     * @param codigo Codigo del servicio
+     * @return Servicio encontrado
+     * @throws EntidadNoEncontradaException si el servicio no existe
+     */
+    public MovingService buscarServicioPorCodigoOError(String codigo) throws EntidadNoEncontradaException {
+        MovingService servicio = buscarServicioPorCodigo(codigo);
+        if (servicio == null) {
+            throw new EntidadNoEncontradaException("Servicio con codigo " + codigo + " no encontrado");
+        }
+        return servicio;
     }
 
     private <T> T buscarEnLista(List<T> lista, Predicado<T> condicion) {
@@ -199,6 +285,11 @@ public class GestorMudanzas {
     public int contarServicios() {
         return servicios.size();
     }
+
+    // ============================================
+    // SEMANA 5: SOBRECARGA Y POLIMORFISMO
+    // ============================================
+
     // Semana 5: Sobrecarga 1 - buscar servicio por codigo
     public MovingService buscarServicio(String codigo) {
         return buscarServicioPorCodigo(codigo);
@@ -231,7 +322,7 @@ public class GestorMudanzas {
     }
 
     // Semana 5: Sobrecarga 4 - registrar persona (Cliente o Empleado)
-    public void registrar(Persona persona) {
+    public void registrar(Persona persona) throws DatosInvalidosException {
         if (persona instanceof Cliente) {
             registrarCliente((Cliente) persona);
         } else if (persona instanceof Empleado) {
@@ -240,14 +331,17 @@ public class GestorMudanzas {
     }
 
     // Semana 5: Sobrecarga 5 - registrar multiple personas
-    public void registrar(List<Persona> personas) {
+    public void registrar(List<Persona> personas) throws DatosInvalidosException {
         for (Persona persona : personas) {
             registrar(persona);
         }
     }
 
     // Semana 5: Sobrecarga 6 - calcular tarifa por capacidad
-    public double calcularTarifa(double capacidadM3) {
+    public double calcularTarifa(double capacidadM3) throws OperacionInvalidaException {
+        if (capacidadM3 <= 0) {
+            throw new OperacionInvalidaException("Capacidad debe ser mayor a 0");
+        }
         if (capacidadM3 <= 10) {
             return 150000;
         } else if (capacidadM3 <= 25) {
@@ -258,12 +352,21 @@ public class GestorMudanzas {
     }
 
     // Semana 5: Sobrecarga 7 - calcular tarifa por vehiculo
-    public double calcularTarifa(Vehiculo vehiculo) {
+    public double calcularTarifa(Vehiculo vehiculo) throws OperacionInvalidaException {
+        if (vehiculo == null) {
+            throw new OperacionInvalidaException("Vehiculo no puede ser nulo");
+        }
         return vehiculo.calcularTarifaBase();
     }
 
     // Semana 5: Sobrecarga 8 - calcular tarifa por vehiculo y distancia
-    public double calcularTarifa(Vehiculo vehiculo, double distanciaKm) {
+    public double calcularTarifa(Vehiculo vehiculo, double distanciaKm) throws OperacionInvalidaException {
+        if (vehiculo == null) {
+            throw new OperacionInvalidaException("Vehiculo no puede ser nulo");
+        }
+        if (distanciaKm < 0) {
+            throw new OperacionInvalidaException("Distancia no puede ser negativa");
+        }
         double tarifaBase = vehiculo.calcularTarifaBase();
         double costoDistancia = distanciaKm * 2000;
         return tarifaBase + costoDistancia;

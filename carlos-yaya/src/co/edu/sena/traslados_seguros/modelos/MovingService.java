@@ -1,4 +1,4 @@
-package co.edu.sena.traslados_seguros;
+package co.edu.sena.traslados_seguros.modelos;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class MovingService {
         if (validarStringNoVacio(serviceCode) && validarCodigo(serviceCode)) {
             this.serviceCode = serviceCode.toUpperCase().trim();
         } else {
-            throw new IllegalArgumentException("Codigo invalido: formato debe ser MOV-### donde ### son 3 digitos");
+            throw new IllegalArgumentException("Codigo invalido: formato debe ser MOV-###");
         }
     }
 
@@ -113,25 +113,48 @@ public class MovingService {
         return fecha != null && !fecha.isBefore(LocalDate.now());
     }
 
+    /**
+     * Asigna un vehiculo al servicio.
+     *
+     * @param vehiculo Vehiculo a asignar
+     * @throws IllegalArgumentException si el vehiculo es nulo
+     */
     public void asignarVehiculo(Vehiculo vehiculo) {
-        if (vehiculo != null) {
-            this.vehiculoAsignado = vehiculo;
-            vehiculo.asignarServicio(this);
+        if (vehiculo == null) {
+            throw new IllegalArgumentException("Vehiculo no puede ser nulo");
         }
+        this.vehiculoAsignado = vehiculo;
+        vehiculo.asignarServicio(this);
     }
 
+    /**
+     * Asigna un empleado al equipo de trabajo.
+     *
+     * @param empleado Empleado a asignar
+     * @throws IllegalArgumentException si el empleado es nulo
+     */
     public void asignarEmpleado(Empleado empleado) {
-        if (empleado != null && !equipoTrabajo.contains(empleado)) {
+        if (empleado == null) {
+            throw new IllegalArgumentException("Empleado no puede ser nulo");
+        }
+        if (!equipoTrabajo.contains(empleado)) {
             equipoTrabajo.add(empleado);
             empleado.asignarServicio(this);
         }
     }
 
+    /**
+     * Asigna un cliente al servicio.
+     *
+     * @param cliente Cliente a asignar
+     * @throws IllegalArgumentException si el cliente es nulo
+     */
     public void asignarCliente(Cliente cliente) {
-        if (cliente != null) {
-            this.cliente = cliente;
-            cliente.agregarServicio(this);
+        if (cliente == null) {
+            throw new IllegalArgumentException("Cliente no puede ser nulo");
         }
+        this.cliente = cliente;
+        cliente.agregarServicio(this);
     }
 
     public int obtenerTamanoEquipo() {
@@ -180,6 +203,7 @@ public class MovingService {
             info.append("  Tarifa base: $").append(vehiculoAsignado.calcularTarifaBase()).append("\n");
         }
     }
+
     private void agregarInfoEquipo(StringBuilder info) {
         if (!equipoTrabajo.isEmpty()) {
             info.append("\nEQUIPO DE TRABAJO (").append(equipoTrabajo.size()).append("):\n");

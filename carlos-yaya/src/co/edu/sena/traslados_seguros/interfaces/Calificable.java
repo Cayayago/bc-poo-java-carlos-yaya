@@ -1,4 +1,4 @@
-package co.edu.sena.traslados_seguros;
+package co.edu.sena.traslados_seguros.interfaces;
 
 public interface Calificable {
 

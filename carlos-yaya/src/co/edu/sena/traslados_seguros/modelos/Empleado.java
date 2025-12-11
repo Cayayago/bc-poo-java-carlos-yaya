@@ -1,9 +1,11 @@
-package co.edu.sena.traslados_seguros;
+package co.edu.sena.traslados_seguros.modelos;
+
+import co.edu.sena.traslados_seguros.interfaces.Notificable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// Semana 4: Empleado hereda de Persona Empleado implementa Notificable
+// Semana 6: Empleado implementa Notificable
 public class Empleado extends Persona implements Notificable {
 
     // Semana 1: Atributos especificos de Empleado
@@ -12,9 +14,11 @@ public class Empleado extends Persona implements Notificable {
     private double salarioDiario;
     private boolean ocupado;
     private List<MovingService> serviciosRealizados;
+
     // Semana 6: Atributos para Notificable
     private List<String> notificacionesPendientes;
-    // Semana 4: Constructor 1
+
+    // Semana 4: Constructor 1 - llama a super()
     public Empleado(String codigoEmpleado, String nombre, String cargo, double salarioDiario, String telefono) {
         super(nombre, telefono, codigoEmpleado);
         setCodigoEmpleado(codigoEmpleado);
@@ -22,8 +26,9 @@ public class Empleado extends Persona implements Notificable {
         setSalarioDiario(salarioDiario);
         this.ocupado = false;
         this.serviciosRealizados = new ArrayList<>();
-        this.notificacionesPendientes = new ArrayList<>(); // Semana 6
+        this.notificacionesPendientes = new ArrayList<>();
     }
+
     // Semana 4: Constructor 2 simplificado
     public Empleado(String codigoEmpleado, String nombre, String cargo, double salarioDiario) {
         this(codigoEmpleado, nombre, cargo, salarioDiario, "0000000000");
@@ -52,7 +57,6 @@ public class Empleado extends Persona implements Notificable {
     public void setCodigoEmpleado(String codigoEmpleado) {
         if (validarStringNoVacio(codigoEmpleado) && validarCodigo(codigoEmpleado)) {
             this.codigoEmpleado = codigoEmpleado.toUpperCase().trim();
-            // Semana 4: Actualizar tambien la identificacion heredada
             this.identificacion = this.codigoEmpleado;
         } else {
             throw new IllegalArgumentException("Codigo invalido: formato debe ser EMP-###");
@@ -67,6 +71,12 @@ public class Empleado extends Persona implements Notificable {
         }
     }
 
+    /**
+     * Establece el salario diario del empleado.
+     *
+     * @param salarioDiario Salario por dia
+     * @throws IllegalArgumentException si el salario esta fuera del rango valido
+     */
     public void setSalarioDiario(double salarioDiario) {
         if (validarSalario(salarioDiario)) {
             this.salarioDiario = salarioDiario;
@@ -96,6 +106,13 @@ public class Empleado extends Persona implements Notificable {
         return salario >= 50000 && salario <= 1000000;
     }
 
+    /**
+     * Calcula el pago semanal del empleado.
+     *
+     * @param diasTrabajados Dias trabajados en la semana
+     * @return Pago total incluyendo bonificaciones
+     * @throws IllegalArgumentException si los dias estan fuera del rango valido
+     */
     public double calcularPagoSemanal(int diasTrabajados) {
         if (!validarDiasTrabajados(diasTrabajados)) {
             throw new IllegalArgumentException("Dias trabajados invalido: debe estar entre 0 y 7");
@@ -118,11 +135,21 @@ public class Empleado extends Persona implements Notificable {
         return 50000;
     }
 
+    /**
+     * Asigna un servicio al empleado.
+     *
+     * @param servicio Servicio a asignar
+     * @throws IllegalArgumentException si el servicio es nulo o el empleado esta ocupado
+     */
     public void asignarServicio(MovingService servicio) {
-        if (!this.ocupado && servicio != null) {
-            this.ocupado = true;
-            agregarServicioAlHistorial(servicio);
+        if (servicio == null) {
+            throw new IllegalArgumentException("Servicio no puede ser nulo");
         }
+        if (this.ocupado) {
+            throw new IllegalArgumentException("Empleado ya esta ocupado");
+        }
+        this.ocupado = true;
+        agregarServicioAlHistorial(servicio);
     }
 
     public void completarServicio() {
@@ -153,15 +180,27 @@ public class Empleado extends Persona implements Notificable {
         System.out.println("Total servicios: " + serviciosRealizados.size());
     }
 
+    // Semana 6: Implementacion del metodo abstracto
+    @Override
+    public double calcularCostoOperacional() {
+        return salarioDiario;
+    }
+
     // Semana 4: Override del metodo heredado
     @Override
     public void mostrarInformacionBasica() {
         System.out.println("=== INFORMACION DEL EMPLEADO ===");
         System.out.println("Codigo: " + codigoEmpleado);
-        super.mostrarInformacionBasica(); // Semana 4: Llamada al metodo padre
+        super.mostrarInformacionBasica();
         System.out.println("Cargo: " + cargo);
         System.out.println("Salario diario: $" + salarioDiario);
         System.out.println("Estado: " + (ocupado ? "OCUPADO" : "DISPONIBLE"));
+    }
+
+    // Semana 5: Override - obtenerTipoPersona
+    @Override
+    public String obtenerTipoPersona() {
+        return "Empleado";
     }
 
     // Semana 4: Override de toString
@@ -172,25 +211,34 @@ public class Empleado extends Persona implements Notificable {
                 " | " + cargo + " | $" + salarioDiario + "/dia | " + estado +
                 " | Servicios: " + serviciosRealizados.size();
     }
-    // Semana 5: Override - obtenerTipoPersona
-    @Override
-    public String obtenerTipoPersona() {
-        return "Empleado";
-    }
-    // Semana 6: Implementacion del metodo abstracto
-    @Override
-    public double calcularCostoOperacional() {
-        // Costo operacional: salario diario
-        return salarioDiario;
-    }
+
+
+    /**
+     * Envia una notificacion normal al empleado.
+     *
+     * @param mensaje Contenido de la notificacion
+     * @throws IllegalArgumentException si el mensaje es nulo o vacio
+     */
     @Override
     public void enviarNotificacion(String mensaje) {
+        if (mensaje == null || mensaje.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mensaje no puede ser nulo o vacio");
+        }
         notificacionesPendientes.add("[NORMAL] " + mensaje);
         System.out.println("Notificacion enviada a empleado " + nombre + ": " + mensaje);
     }
 
+    /**
+     * Envia una notificacion urgente al empleado.
+     *
+     * @param mensaje Contenido de la notificacion urgente
+     * @throws IllegalArgumentException si el mensaje es nulo o vacio
+     */
     @Override
     public void enviarNotificacionUrgente(String mensaje) {
+        if (mensaje == null || mensaje.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mensaje no puede ser nulo o vacio");
+        }
         notificacionesPendientes.add("[URGENTE] " + mensaje);
         System.out.println("*** URGENTE *** Notificacion a empleado " + nombre + ": " + mensaje);
     }

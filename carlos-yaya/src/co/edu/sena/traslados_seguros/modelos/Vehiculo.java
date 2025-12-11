@@ -1,4 +1,4 @@
-package co.edu.sena.traslados_seguros;
+package co.edu.sena.traslados_seguros.modelos;
 
 
 import java.util.ArrayList;
@@ -66,6 +66,12 @@ public class Vehiculo {
         }
     }
 
+    /**
+     * Establece la capacidad del vehiculo.
+     *
+     * @param capacidadM3 Capacidad en metros cubicos
+     * @throws IllegalArgumentException si la capacidad esta fuera del rango valido
+     */
     public void setCapacidadM3(double capacidadM3) {
         if (validarCapacidad(capacidadM3)) {
             this.capacidadM3 = capacidadM3;
@@ -120,13 +126,21 @@ public class Vehiculo {
         }
     }
 
+    /**
+     * Asigna un servicio al vehiculo.
+     *
+     * @param servicio Servicio a asignar
+     * @throws IllegalArgumentException si el servicio es nulo o el vehiculo no esta disponible
+     */
     public void asignarServicio(MovingService servicio) {
-        if (this.disponible && servicio != null) {
-            this.disponible = false;
-            agregarServicioAlHistorial(servicio);
-        } else if (!this.disponible) {
-            System.out.println("ERROR: Vehiculo " + placa + " no disponible");
+        if (servicio == null) {
+            throw new IllegalArgumentException("Servicio no puede ser nulo");
         }
+        if (!this.disponible) {
+            throw new IllegalArgumentException("Vehiculo " + placa + " no esta disponible");
+        }
+        this.disponible = false;
+        agregarServicioAlHistorial(servicio);
     }
 
     public void liberarVehiculo() {

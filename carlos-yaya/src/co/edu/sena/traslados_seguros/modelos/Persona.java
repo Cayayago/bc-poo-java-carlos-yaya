@@ -1,4 +1,4 @@
-package co.edu.sena.traslados_seguros;
+package co.edu.sena.traslados_seguros.modelos;
 
 // Semana 6: Convertida en clase abstracta
 public abstract class Persona {
