@@ -13,19 +13,34 @@ import co.edu.sena.traslados_seguros.excepciones.OperacionInvalidaException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GestorMudanzas {
 
+    // Semana 1-7: ArrayList con Generics
     private List<Cliente> clientes;
     private List<Vehiculo> vehiculos;
     private List<Empleado> empleados;
     private List<MovingService> servicios;
+
+    // Semana 8: HashMaps para busqueda rapida O(1)
+    private HashMap<String, Cliente> clientesPorId;
+    private HashMap<String, Empleado> empleadosPorCodigo;
+    private HashMap<String, Vehiculo> vehiculosPorPlaca;
+    private HashMap<String, MovingService> serviciosPorCodigo;
 
     public GestorMudanzas() {
         this.clientes = new ArrayList<>();
         this.vehiculos = new ArrayList<>();
         this.empleados = new ArrayList<>();
         this.servicios = new ArrayList<>();
+
+        // Semana 8: Inicializar HashMaps
+        this.clientesPorId = new HashMap<>();
+        this.empleadosPorCodigo = new HashMap<>();
+        this.vehiculosPorPlaca = new HashMap<>();
+        this.serviciosPorCodigo = new HashMap<>();
     }
 
     public List<Cliente> getClientes() {
@@ -55,10 +70,13 @@ public class GestorMudanzas {
             throw new DatosInvalidosException("Cliente no puede ser nulo");
         }
 
-        if (buscarClientePorId(cliente.getIdentificacion()) != null) {
+        // Semana 8: Verificar duplicado usando HashMap
+        if (clientesPorId.containsKey(cliente.getIdentificacion())) {
             throw new DatosInvalidosException("Cliente con ID " + cliente.getIdentificacion() + " ya existe");
         }
+
         clientes.add(cliente);
+        clientesPorId.put(cliente.getIdentificacion(), cliente); // Semana 8: Agregar a HashMap
         System.out.println("Cliente " + cliente.getNombre() + " registrado exitosamente");
     }
 
@@ -73,10 +91,13 @@ public class GestorMudanzas {
             throw new DatosInvalidosException("Vehiculo no puede ser nulo");
         }
 
-        if (buscarVehiculoPorPlaca(vehiculo.getPlaca()) != null) {
+        // Semana 8: Verificar duplicado usando HashMap
+        if (vehiculosPorPlaca.containsKey(vehiculo.getPlaca())) {
             throw new DatosInvalidosException("Vehiculo con placa " + vehiculo.getPlaca() + " ya existe");
         }
+
         vehiculos.add(vehiculo);
+        vehiculosPorPlaca.put(vehiculo.getPlaca(), vehiculo); // Semana 8: Agregar a HashMap
         System.out.println("Vehiculo " + vehiculo.getPlaca() + " registrado exitosamente");
     }
 
@@ -91,10 +112,13 @@ public class GestorMudanzas {
             throw new DatosInvalidosException("Empleado no puede ser nulo");
         }
 
-        if (buscarEmpleadoPorCodigo(empleado.getCodigoEmpleado()) != null) {
+        // Semana 8: Verificar duplicado usando HashMap
+        if (empleadosPorCodigo.containsKey(empleado.getCodigoEmpleado())) {
             throw new DatosInvalidosException("Empleado con codigo " + empleado.getCodigoEmpleado() + " ya existe");
         }
+
         empleados.add(empleado);
+        empleadosPorCodigo.put(empleado.getCodigoEmpleado(), empleado); // Semana 8: Agregar a HashMap
         System.out.println("Empleado " + empleado.getNombre() + " registrado exitosamente");
     }
 
@@ -109,15 +133,19 @@ public class GestorMudanzas {
             throw new DatosInvalidosException("Servicio no puede ser nulo");
         }
 
-        if (buscarServicioPorCodigo(servicio.getServiceCode()) != null) {
+        // Semana 8: Verificar duplicado usando HashMap
+        if (serviciosPorCodigo.containsKey(servicio.getServiceCode())) {
             throw new DatosInvalidosException("Servicio con codigo " + servicio.getServiceCode() + " ya existe");
         }
+
         servicios.add(servicio);
+        serviciosPorCodigo.put(servicio.getServiceCode(), servicio); // Semana 8: Agregar a HashMap
         System.out.println("Servicio " + servicio.getServiceCode() + " registrado exitosamente");
     }
 
+    // Semana 8: Busqueda O(1) usando HashMap
     public Cliente buscarClientePorId(String identificacion) {
-        return buscarEnLista(clientes, c -> c.getIdentificacion().equals(identificacion));
+        return clientesPorId.get(identificacion);
     }
 
     /**
@@ -135,8 +163,9 @@ public class GestorMudanzas {
         return cliente;
     }
 
+    // Semana 8: Busqueda O(1) usando HashMap
     public Vehiculo buscarVehiculoPorPlaca(String placa) {
-        return buscarEnLista(vehiculos, v -> v.getPlaca().equalsIgnoreCase(placa));
+        return vehiculosPorPlaca.get(placa.toUpperCase());
     }
 
     /**
@@ -154,8 +183,9 @@ public class GestorMudanzas {
         return vehiculo;
     }
 
+    // Semana 8: Busqueda O(1) usando HashMap
     public Empleado buscarEmpleadoPorCodigo(String codigo) {
-        return buscarEnLista(empleados, e -> e.getCodigoEmpleado().equalsIgnoreCase(codigo));
+        return empleadosPorCodigo.get(codigo.toUpperCase());
     }
 
     /**
@@ -173,8 +203,9 @@ public class GestorMudanzas {
         return empleado;
     }
 
+    // Semana 8: Busqueda O(1) usando HashMap
     public MovingService buscarServicioPorCodigo(String codigo) {
-        return buscarEnLista(servicios, s -> s.getServiceCode().equalsIgnoreCase(codigo));
+        return serviciosPorCodigo.get(codigo.toUpperCase());
     }
 
     /**
@@ -420,5 +451,276 @@ public class GestorMudanzas {
                 (esValido ? "VALIDO" : "INVALIDO"));
 
         return esValido;
+    }
+
+    // ============================================
+    // SEMANA 8: FILTRADO Y ESTADISTICAS
+    // ============================================
+
+    /**
+     * Filtra clientes por nivel de calidad.
+     *
+     * @param nivelMinimo Nivel minimo (EXCELENTE, BUENO, REGULAR, MALO)
+     * @return Lista de clientes que cumplen el criterio
+     */
+    public List<Cliente> filtrarClientesPorCalidad(String nivelMinimo) {
+        List<Cliente> resultado = new ArrayList<>();
+
+        for (Cliente cliente : clientes) {
+            String nivel = cliente.obtenerNivelCalidad();
+            if (cumpleNivelMinimo(nivel, nivelMinimo)) {
+                resultado.add(cliente);
+            }
+        }
+
+        return resultado;
+    }
+
+    private boolean cumpleNivelMinimo(String nivelActual, String nivelMinimo) {
+        int valorActual = obtenerValorNivel(nivelActual);
+        int valorMinimo = obtenerValorNivel(nivelMinimo);
+        return valorActual >= valorMinimo;
+    }
+
+    private int obtenerValorNivel(String nivel) {
+        switch (nivel.toUpperCase()) {
+            case "EXCELENTE": return 4;
+            case "BUENO": return 3;
+            case "REGULAR": return 2;
+            case "MALO": return 1;
+            default: return 0;
+        }
+    }
+
+    /**
+     * Filtra empleados por rango de salario.
+     *
+     * @param salarioMinimo Salario minimo
+     * @param salarioMaximo Salario maximo
+     * @return Lista de empleados en el rango
+     */
+    public List<Empleado> filtrarEmpleadosPorSalario(double salarioMinimo, double salarioMaximo) {
+        List<Empleado> resultado = new ArrayList<>();
+
+        for (Empleado empleado : empleados) {
+            double salario = empleado.getSalarioDiario();
+            if (salario >= salarioMinimo && salario <= salarioMaximo) {
+                resultado.add(empleado);
+            }
+        }
+
+        return resultado;
+    }
+
+    /**
+     * Filtra vehiculos por capacidad minima.
+     *
+     * @param capacidadMinima Capacidad minima en m3
+     * @return Lista de vehiculos con capacidad suficiente
+     */
+    public List<Vehiculo> filtrarVehiculosPorCapacidad(double capacidadMinima) {
+        List<Vehiculo> resultado = new ArrayList<>();
+
+        for (Vehiculo vehiculo : vehiculos) {
+            if (vehiculo.getCapacidadM3() >= capacidadMinima) {
+                resultado.add(vehiculo);
+            }
+        }
+
+        return resultado;
+    }
+
+    /**
+     * Filtra servicios por fecha.
+     *
+     * @param fechaInicio Fecha inicial
+     * @param fechaFin Fecha final
+     * @return Lista de servicios en el rango
+     */
+    public List<MovingService> filtrarServiciosPorFecha(LocalDate fechaInicio, LocalDate fechaFin) {
+        List<MovingService> resultado = new ArrayList<>();
+
+        for (MovingService servicio : servicios) {
+            LocalDate fecha = servicio.getFechaServicio();
+            if (fecha != null && !fecha.isBefore(fechaInicio) && !fecha.isAfter(fechaFin)) {
+                resultado.add(servicio);
+            }
+        }
+
+        return resultado;
+    }
+
+    /**
+     * Calcula el salario promedio de todos los empleados.
+     *
+     * @return Salario promedio
+     */
+    public double calcularSalarioPromedio() {
+        if (empleados.isEmpty()) {
+            return 0.0;
+        }
+
+        double suma = 0;
+        for (Empleado empleado : empleados) {
+            suma += empleado.getSalarioDiario();
+        }
+
+        return suma / empleados.size();
+    }
+
+    /**
+     * Calcula el promedio de calificaciones de todos los clientes.
+     *
+     * @return Promedio general de calificaciones
+     */
+    public double calcularPromedioCalificacionesGeneral() {
+        double sumaPromedios = 0;
+        int clientesConCalificaciones = 0;
+
+        for (Cliente cliente : clientes) {
+            if (cliente.obtenerTotalCalificaciones() > 0) {
+                sumaPromedios += cliente.obtenerPromedioCalificaciones();
+                clientesConCalificaciones++;
+            }
+        }
+
+        return clientesConCalificaciones > 0 ? sumaPromedios / clientesConCalificaciones : 0.0;
+    }
+
+    /**
+     * Calcula la capacidad total disponible de vehiculos.
+     *
+     * @return Capacidad total en m3
+     */
+    public double calcularCapacidadTotalDisponible() {
+        double capacidadTotal = 0;
+
+        for (Vehiculo vehiculo : vehiculos) {
+            if (vehiculo.isDisponible()) {
+                capacidadTotal += vehiculo.getCapacidadM3();
+            }
+        }
+
+        return capacidadTotal;
+    }
+
+    /**
+     * Encuentra el empleado con mayor numero de servicios realizados.
+     *
+     * @return Empleado mas activo o null si no hay empleados
+     */
+    public Empleado encontrarEmpleadoMasActivo() {
+        if (empleados.isEmpty()) {
+            return null;
+        }
+
+        Empleado masActivo = empleados.get(0);
+        int maxServicios = masActivo.contarServiciosRealizados();
+
+        for (Empleado empleado : empleados) {
+            int servicios = empleado.contarServiciosRealizados();
+            if (servicios > maxServicios) {
+                maxServicios = servicios;
+                masActivo = empleado;
+            }
+        }
+
+        return masActivo;
+    }
+
+    /**
+     * Encuentra el cliente con mas servicios contratados.
+     *
+     * @return Cliente mas frecuente o null si no hay clientes
+     */
+    public Cliente encontrarClienteMasFrecuente() {
+        if (clientes.isEmpty()) {
+            return null;
+        }
+
+        Cliente masFrecuente = clientes.get(0);
+        int maxServicios = masFrecuente.contarServicios();
+
+        for (Cliente cliente : clientes) {
+            int servicios = cliente.contarServicios();
+            if (servicios > maxServicios) {
+                maxServicios = servicios;
+                masFrecuente = cliente;
+            }
+        }
+
+        return masFrecuente;
+    }
+
+    /**
+     * Calcula estadisticas detalladas del sistema.
+     */
+    public void generarEstadisticasDetalladas() {
+        System.out.println("\n=== ESTADISTICAS DETALLADAS DEL SISTEMA ===");
+
+        System.out.println("\nEMPLEADOS:");
+        System.out.println("  Total: " + empleados.size());
+        System.out.println("  Disponibles: " + obtenerEmpleadosDisponibles().size());
+        System.out.println("  Salario promedio: $" + String.format("%.2f", calcularSalarioPromedio()));
+
+        Empleado masActivo = encontrarEmpleadoMasActivo();
+        if (masActivo != null) {
+            System.out.println("  Mas activo: " + masActivo.getNombre() +
+                    " (" + masActivo.contarServiciosRealizados() + " servicios)");
+        }
+
+        System.out.println("\nCLIENTES:");
+        System.out.println("  Total: " + clientes.size());
+        System.out.println("  Promedio calificaciones: " +
+                String.format("%.2f", calcularPromedioCalificacionesGeneral()));
+
+        Cliente masFrecuente = encontrarClienteMasFrecuente();
+        if (masFrecuente != null) {
+            System.out.println("  Mas frecuente: " + masFrecuente.getNombre() +
+                    " (" + masFrecuente.contarServicios() + " servicios)");
+        }
+
+        System.out.println("\nVEHICULOS:");
+        System.out.println("  Total: " + vehiculos.size());
+        System.out.println("  Disponibles: " + obtenerVehiculosDisponibles().size());
+        System.out.println("  Capacidad total disponible: " +
+                String.format("%.2f", calcularCapacidadTotalDisponible()) + " m3");
+
+        System.out.println("\nSERVICIOS:");
+        System.out.println("  Total registrados: " + servicios.size());
+    }
+
+    /**
+     * Muestra distribucion de empleados por cargo.
+     */
+    public void mostrarDistribucionPorCargo() {
+        HashMap<String, Integer> distribucion = new HashMap<>();
+
+        for (Empleado empleado : empleados) {
+            String cargo = empleado.getCargo();
+            distribucion.put(cargo, distribucion.getOrDefault(cargo, 0) + 1);
+        }
+
+        System.out.println("\n=== DISTRIBUCION POR CARGO ===");
+        for (Map.Entry<String, Integer> entry : distribucion.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue() + " empleado(s)");
+        }
+    }
+
+    /**
+     * Muestra distribucion de vehiculos por tipo.
+     */
+    public void mostrarDistribucionPorTipoVehiculo() {
+        HashMap<String, Integer> distribucion = new HashMap<>();
+
+        for (Vehiculo vehiculo : vehiculos) {
+            String tipo = vehiculo.getTipoVehiculo();
+            distribucion.put(tipo, distribucion.getOrDefault(tipo, 0) + 1);
+        }
+
+        System.out.println("\n=== DISTRIBUCION POR TIPO DE VEHICULO ===");
+        for (Map.Entry<String, Integer> entry : distribucion.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue() + " vehiculo(s)");
+        }
     }
 }
